@@ -7,7 +7,7 @@ const morgan = require('morgan')
 const path = require('path');
 const session = require('express-session');
 const nunjucks = require('nunjucks');
-
+const passport = require('passport');
 
 //환경설정은 config
 dotenv.config();
@@ -53,6 +53,9 @@ const app =express();
     },
  }));
 
+ //세션이 익스프레스 세션으로부터 받아와서 패스토프에서 처리해주는 것이기 때문에 express, express session 설정보다 아래에 있어야 된다. 
+app.use(passport, passport.initialize());
+app.use(passport.session());
  // page 라우터 뒤에 만들기 
  app.use('/', pageRouter);
  app.use('/auth', authRouter);
