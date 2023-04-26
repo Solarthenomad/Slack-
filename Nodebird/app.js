@@ -14,7 +14,11 @@ dotenv.config();
 
 //라우터 설정 페이지 서버에 가져오기 
 const pageRouter = require('./routes/page');
+const authRouter = require('./routes/auth');
+
 const exp = require('constants');
+//dotenv보다 밑에 해야지 dotenv 설정의 영향을 받음(쿠키 발행 관련 보안 설정)
+const {sequelize} = require('/models')
 
 
 // app서버는 express 사이드서버렌더링 프레임워크로 구축한다. 
@@ -27,6 +31,11 @@ const app =express();
     express : app,
     watch:true,
  });
+ sequelize.sync({force :false}).then(() => {
+    console.log('데이터 베이스 연결 성공하였습니다.')
+ })  //sequelize 연결
+ //models의 sequelize의 sql 설정을 바꾸면 force :true 라고 하면 데이터베이스가 지워졌다가 새로 만들어짐
+ // 지워지지 않게 하려면 false를 적어주는 게 좋음 
 
  // 미들웨어(routes/pages를 연결해주도록 하는 친구들)
  app.use(morgan('dev'));
@@ -46,6 +55,7 @@ const app =express();
 
  // page 라우터 뒤에 만들기 
  app.use('/', pageRouter);
+ app.use('/auth', authRouter);
 
  // 404처리 미들웨어 : 라우터가 없으면 404 에러가 뜨고, 라우터를 만들어주어야 한다. 
  app.use((req,res, next) => {
