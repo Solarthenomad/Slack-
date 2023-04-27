@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const {isLoggedIn, isNotLoggedIn} = require('./middlewares');
+const {isLoggedIn, isNotLoggedIn} = require('./middlewares');
 
 //라우터 만들기 
 const router = express.Router();
@@ -33,7 +34,8 @@ router.post('/join', isNotLoggedIn, async(req, res,next) =>{
 });
 
 //프론트에서 로그인을 누를 때, 이 부분이 실행되는데, local까지 실행된다. -> localstrategy.js로 이동하게 됨 
-router.post('/login', (req, res, next) =>{
+router.post('/login', {isNotLoggedIn},(req, res, next) =>{
+    req.user;
     passport.authenticate('local', (authError,user, info) =>{
         if(authError) {
             console.error(authError);
@@ -62,7 +64,16 @@ router.get('/logout', isLoggedIn, (req, res) =>{
     req.user; // 사용자 정보 
     req.logout();
     req.session.destroy();
-    //세션 큐키를 브라우저로 보낸다. 
+    //세션 쿠키를 브라우저로 보낸다. 
+    res.redirect('/');
+});
+
+//
+router.get('/kakao', passport.authenticate('kakao'));
+
+router.get('/kakao/callback', passport.authenticate('kakao',{
+    failureRedirect : '/',
+} ), (req, res)=>{
     res.redirect('/');
 });
 
