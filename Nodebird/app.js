@@ -18,7 +18,8 @@ const authRouter = require('./routes/auth');
 
 const exp = require('constants');
 //dotenv보다 밑에 해야지 dotenv 설정의 영향을 받음(쿠키 발행 관련 보안 설정)
-const {sequelize} = require('/models')
+const {sequelize} = require('/models');
+const passportconfig = 
 
 
 // app서버는 express 사이드서버렌더링 프레임워크로 구축한다. 

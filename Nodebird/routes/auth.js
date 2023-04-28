@@ -1,7 +1,9 @@
 const express = require('express');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
-const {isLoggedIn, isNotLoggedIn} = require('./middlewares');
+const User = require('../models/user');
+// 카카오 로그인기능을 위한 require
+const passport = require('passport');
 const {isLoggedIn, isNotLoggedIn} = require('./middlewares');
 
 //라우터 만들기 
