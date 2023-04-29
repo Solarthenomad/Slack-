@@ -50,7 +50,7 @@
         const formData = new FormData();
         console.log(this, this.files);
         formData.append('img', this.files[0]);
-        axios.post('/post/img', formData)
+        axios.post('/post/img?hashtag=${encodeURIComponent('노드')}', formData)
           .then((res) => {
             document.getElementById('img-url').value = res.data.url;
             document.getElementById('img-preview').src = res.data.url;

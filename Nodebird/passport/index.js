@@ -15,7 +15,22 @@ module.exports=() =>{
 
     //유저 정보 복구 : deseializeUser
     passport.deserializeUser((id, done) =>{
-        User.findOne({where : {id}}).then(user => done(null, user)).catch(err => done(err));
+        User.findOne({
+            where : {id},
+            include : [{
+                model : Post,  //내가 쓴 포스트 글 가져오기 
+            },{
+                model : User,
+                attributes : ['id', 'nick'],
+                as : 'Followers',
+
+            }, {
+                model : User,
+                attributes : ['id', 'nick'],
+                as : 'Followings',
+            }],
+        })
+        .then(user => done(null, user)).catch(err => done(err));
 
     });
 

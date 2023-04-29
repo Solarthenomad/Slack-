@@ -37,7 +37,6 @@ router.post('/join', isNotLoggedIn, async(req, res,next) =>{
 
 //프론트에서 로그인을 누를 때, 이 부분이 실행되는데, local까지 실행된다. -> localstrategy.js로 이동하게 됨 
 router.post('/login', {isNotLoggedIn},(req, res, next) =>{
-    req.user;
     passport.authenticate('local', (authError,user, info) =>{
         if(authError) {
             console.error(authError);
