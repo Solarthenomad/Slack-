@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GIF 채팅방</title>
+</head>
+<body>
+<div>F12를 눌러 console 탭과 network 탭을 확인하세요.</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io.connect('http://localhost:8005', {
+    path: '/socket.io',  //socket.io의 패스와 일치시켜야 됨 
+    transports: ['websocket'], //위에 http를 websocket만 사용해서 통신하고 싶을 때 사용한다.
+  });
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('reply', 'Hello Node.JS');
+    //socket.io는 메세지 하나만 있는 게 아니라 여러개의 이벤트 리스너를 만드는 것이가능하다.
+  });
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('reply', 'Hello Node.JS');
+    //socket.io는 메세지 하나만 있는 게 아니라 여러개의 이벤트 리스너를 만드는 것이가능하다.
+  });
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('reply', 'Hello Node.JS');
+    //socket.io는 메세지 하나만 있는 게 아니라 여러개의 이벤트 리스너를 만드는 것이가능하다.
+    // websocket은 그냥 메세지만 보내는데, socket.io는 메세지에 이름을 붙여서 보내는것이 가능하다. 메세지에 이름은 reply
+  });
+</script>
+<!-- <script>
+  const webSocket = new WebSocket("ws://localhost:8005");
+  webSocket.onopen = function () {
+    console.log('서버와 웹소켓 연결 성공!');
+  };
+  //프론트와 서버가 연결될 때 사용하는 로직
+  webSocket.onmessage = function (event) {
+    // 서버에서 클라이언트로 메세지가 보내지는 것 (onmessage)
+    console.log(event.data); // 서버에서 클라이언트로 보내진 데이터를 출력한다.
+    webSocket.send('클라이언트에서 서버로 답장을 보냅니다');
+    //프론트에서 서버로 답장을 보낼 때 작성하는 로직
+  };
+</script> -->
+</body>
+</html>
