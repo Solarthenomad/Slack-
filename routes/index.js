@@ -2,7 +2,9 @@ const express=require('express');
 
 const Room = require('../schemas/room');
 const Chat = require('../schemas/chat');
-
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
 
 
@@ -57,6 +59,7 @@ router.get('/room/:id', async(req,res,next) =>{
         if (rooms && rooms[req.params.id] && room.max <= rooms[req.params.id].length){
             return res.redirect('/?error = 허용 인원이 초과하였습니다.');
         }
+        const chats = await Chat.find({room : room._id}).sort('createdAt');
         return res.render('chat',{
             rooms,
             title : room.title,
@@ -86,6 +89,60 @@ router.delete('/room/:id', async(req, res,next) =>{
         next(error);
     }
 })
+
+router.post('/room/:id/chat', async (req, res,next)=>{
+    try{
+        const chat = await Chat.create({
+            room : req.params.id,
+            user : req.session.color,
+            chat : req.body.chat,
+        });
+
+        //req.app.get('io').broadcast.emit('chat',chat);
+        req.app.get('io').of('/chat').emit('chat', chat); // 특정 방 사용자에게만 메세지를 수신하는 것 
+        res.send('ok');
+    }catch(error){
+        console.error(error);
+        next(error);
+    }
+});
+
+try {
+    fs.readdirSync('uploads');
+
+}catch(err){
+    console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
+    fs.mkdirSync('uploads');
+}
+const upload = multer({
+    storage : multer.diskStorage({
+        destination(req, file,done){
+            done(null, 'uploads/');
+        },
+        filename(req, file ,done){
+            const ext = path.extname(file.originalname);
+            done(null, path.basename(file.originalname, ext) + Date.now()+ext);
+        },
+        
+}),
+limits : {fileSize : 5*1024*1024},});
+router.post('/room/:id/gif', upload.single('gif'), async(req,res,next)=>{
+    try{
+        const chat = await Chat.create({
+            room : req.params.id,
+            user : req.session.color,
+            gif : req.file.filename,
+
+        });
+        req.app.get('io').of('/chat').to(req.params.id).emit('chat', chat);
+        res.send('ok');
+    }catch(error){
+        console.error(error);
+        next(error);
+
+    }
+});
+
 
 
 module.exports = router;

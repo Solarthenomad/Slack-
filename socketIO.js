@@ -1,5 +1,9 @@
+const cookieParser = require('cookie-parser');
+const axios = require('axios');
 const SocketIO = require('socket.io');
+const cookie = require('cookie-signature');
 //io(전체 사용자들끼리 데이터 공유) > namespace(namespace끼리 소통 제한) >> 방(방에 참가한 사람들끼리만 제한)
+
 module.exports =(server ,app) =>{
     const io = SocketIO(server , {path : '/socket.io'});
     this.app.set('io', io); //req.app.set과 같음 // req.app.get('io)
@@ -25,9 +29,10 @@ module.exports =(server ,app) =>{
 
   chat.on('connection', (socket) => {
     console.log('chat 네임스페이스에 접속');
-    const req = socket.request.session.color;
+    const req = socket.request;
     const {headers : {referer}}  = req;
-    const roomUd = referer.split('/')[referer.split('/').length -1].replace(/\?+/, '');
+    console.log(referer);
+    const roomId = referer.split('/')[referer.split('/').length -1].replace(/\?+/, '');
     socket.join(roomId)
 
     socket.on('join', (data) => {
@@ -68,10 +73,25 @@ module.exports =(server ,app) =>{
     socket.on('disconnect', () => { // 연결 종료 시
       console.log('클라이언트 접속 해제', ip, socket.id);
       clearInterval(socket.interval);
-      socket.leave(roomId)함
+      socket.leave(roomId)
       const currentRoom = socekt.adapter.rooms[roomId];
       const userCount = currentRoom ? currentRoom.length :0;
       if(usercount === 0) { //유저가 0명이면 방 삭제함
+        // req.signedCookie['connect.sid'];
+        // const signedCookie = cookie.sign();
+        const signedCookie = cookie.sign(req.signedCookie['connect.sid'], process.env.COOKIE_SECRET);
+        const connectSID = '${signedCookie}';
+        axios.delete('http://localhost:8050/room/${roomId}',{
+          headers :{
+            Cookie : 'connect.sid = s%3A${connectSID}'
+          }
+        })
+        .then(()=>{
+          console.log('${roomId} 방 제거 성공');
+        })
+        .catch((error)=>{
+          console.error(error);
+        })
 
       }else {
         socket.to(roomId).emit('exit',{
