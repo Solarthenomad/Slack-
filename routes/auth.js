@@ -43,7 +43,15 @@ router.post('/login', isNoteLoggedIn, (req,res,next)=>{
                 console.error(loginError);
                 return next(loginError);
             }
-            return res.redirect('
-        })
-    })
+            return res.redirect('/');
+        });
+    })(req,res,next);
+});
+
+router.get('/logout', isLoggedIn, (req,res) =>{
+    req.logout();
+    req.session.destroy();
+    res.redirect('/');
 })
+
+module.exports = router;
