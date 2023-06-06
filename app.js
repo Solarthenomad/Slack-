@@ -36,6 +36,8 @@ sequelize.sync({ force: false })
     console.error(err);
   });
 
+//SSE : EventSource라는 객체로 사용한다.
+// eventSource polyfill을 넣어준다. -> io에서 작동할 수 있도록 함 
 
 const sessionMiddleware = session({
   resave: false,

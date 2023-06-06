@@ -1,14 +1,14 @@
 {
   "name": "auctionmini",
-  "version" : "1.0.0",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start" : "nodemon app"
+    "start": "nodemon app"
   },
   "author": "Solarthenomad",
   "license": "ISC",
-  "dependencies" : {
+  "dependencies": {
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.1.3",
     "express": "^4.18.2",

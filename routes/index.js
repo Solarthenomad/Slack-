@@ -83,6 +83,52 @@ router.post('/good', isLoggedIn, upload.single('img', async(req,res,next)=>{
     }
 }))
 
+//입찰상품 페이지 : 로그인 되어있을 경우
+router.get('/good/:id', isLoggedIn, async(req,res,next)=>{
+  try{
+    const [good, auction] = await Promise.all([
+      Good.findOne({
+        where : {id : req.params.id},
+        include :{
+          modal : User,
+          as :'Owner',
+        },
+      }),
+      Auction.findAll({
+        where : {GoodId : req.params.id},
+        include : {model : User},
+        order : [['bid', 'ASC']]
+      })
+    ]);
+    res.render('auction',{
+      title : '${good.name}- NodeAuction',
+      good,
+      auction,
+    });
+
+  }catch(error){
+    console.error(error);
+    next(error);
+
+  }
+})
+
+router.post('/good/:id/bid', isLoggedIn, async(req,res,next)=>{
+  try {
+    const {bid, msg} = req.body;
+    const good = await Good.findOne({
+      where :{id : req.params.id},
+      include : {model : Auction },
+      order : [[{model : Auction}, 'bid', 'DESC']],
+
+    });
+    if (good.price >=bid){
+      return res.status(403).send('시작 가격보다 높게 입찰해야합니다.');
+    }
+    if (new Date(good.createAt). valueOf()+())
+  }
+})
+
 //서버센트 이벤트 : npm i sse socket.io : 서버에서 클라이언트로만 주기적으로 데이터를 보내고, 클라이언트에서는 서버로 데이터를 보낼 수 없음 즉 서버 시간을 주기적으로 크라이언트로 내려보내준다. 실시간 입찰 시 사용한다. 
 
 //메인 페이지에서 보여주는 것들에 대해서 작성해준다.
